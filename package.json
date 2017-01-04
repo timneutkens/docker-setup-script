@@ -11,6 +11,7 @@
     "resolver.txt"
   ],
   "license": "MIT",
+  "repository": "timneutkens/docker-setup-script",
   "dependencies": {
     "dockerode": "^2.3.1",
     "ncp": "^2.0.0",
