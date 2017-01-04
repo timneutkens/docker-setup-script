@@ -59,7 +59,7 @@ async function runCommand () {
   }
 
   // Copy dns resolver config for *.dev
-  await loader('Configuring DNS', ncp('resolver.txt', '/etc/resolver/dev'))
+  await loader('Configuring DNS', ncp(`${__dirname}/resolver.txt`, '/etc/resolver/dev'))
 
   // Create cache volume for composer
   await loader('Creating composerdata volume', createVolume({ Name: 'composerdata' }))
