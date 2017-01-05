@@ -28,6 +28,21 @@ async function check (fn) {
   }
 }
 
+async function pull (image) {
+  return new Promise((resolve, reject) => {
+    docker.pull(image, (error, stream) => {
+      if (error) reject(error)
+
+      stream.pipe(process.stdout)
+      docker.modem.followProgress(stream, (error, output) => {
+        if (error) reject(error)
+
+        resolve(output)
+      })
+    })
+  })
+}
+
 async function loader (text, fn) {
   const loading = ora(text).start()
   const output = typeof fn === 'function' ? await fn() : fn
@@ -43,10 +58,11 @@ async function runCommand () {
   let info = await loader('Checking container info', check(() => container('inspect')))
 
   // Create new container if it doesn't exist already
-  if(info) {
+  if (info) {
     ora('Container already running').start().stopAndPersist('✔️')
   } else {
     await loader('Creating proxy container', async () => {
+      await pull('codekitchen/dinghy-http-proxy')
       dockerContainer = await createContainer(proxyConfig)
       container = methodFactory(dockerContainer)
       info = await container('inspect')
@@ -54,7 +70,7 @@ async function runCommand () {
   }
 
   // Start container if it's not running
-  if(!info.State.Running) {
+  if (!info.State.Running) {
     await loader('Starting container', container('start'))
   }
 
